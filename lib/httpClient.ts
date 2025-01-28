@@ -1,7 +1,16 @@
-const baseUrl = "http://localhost:3000/api";
+const getBaseUrl = () => {
+  const baseUrl =  process.env?.NEXT_PUBLIC_API_URL;
+
+  if (!baseUrl) {
+    throw new Error('Base URL not found')
+  }
+
+  return baseUrl
+}
 
 async function getData<T>(path: string) {
   try {
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}${path}`);
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
@@ -20,6 +29,7 @@ async function getData<T>(path: string) {
 
 async function removeData<T>(path: string) {
   try {
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}${path}`, {
       method: "DELETE",
     });
@@ -43,6 +53,7 @@ async function postData<T>(
   body: T
 ): Promise<{ status: number; message: string }> {
   try {
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}${path}`, {
       method: "POST",
       headers: {
@@ -70,6 +81,7 @@ async function putData<T>(
   body: T
 ): Promise<{ status: number; message: string }> {
   try {
+    const baseUrl = getBaseUrl()
     const response = await fetch(`${baseUrl}${path}`, {
       method: "PUT",
       headers: {
