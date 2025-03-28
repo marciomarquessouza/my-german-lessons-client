@@ -23,6 +23,7 @@ export interface LessonFormProps {
 const defaultState: Lesson = {
   id: "",
   name: "",
+  slugName: "",
   description: "",
 };
 
