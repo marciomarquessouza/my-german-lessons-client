@@ -21,6 +21,7 @@ export default function LessonsList({ lessons }: LessonsListProps) {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
+            <TableCell>Slug Name</TableCell>
             <TableCell>Description</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -30,6 +31,9 @@ export default function LessonsList({ lessons }: LessonsListProps) {
             <TableRow key={lesson.id}>
               <TableCell component="th" scope="row">
                 <Link href={`/challenges/${lesson.id}`}>{lesson.name}</Link>
+              </TableCell>
+              <TableCell scope="row">
+                <Link href={`/challenges/${lesson.id}`}>{lesson.slugName}</Link>
               </TableCell>
               <TableCell>
                 <Link href={`/challenges/${lesson.id}`}>

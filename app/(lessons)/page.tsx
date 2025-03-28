@@ -1,9 +1,14 @@
 import React from "react";
-import { Box } from "@mui/material";
+import type { Metadata } from "next";
+import { Box, Paper } from "@mui/material";
 import LessonsList from "@/components/lessons/LessonsList";
 import FormDrawer from "@/components/core/FormDrawer";
 import LessonForm from "@/components/lessons/LessonForm";
 import { getAllLessons } from "@/services/lessons";
+
+export const metadata: Metadata = {
+  title: "Learning With Ghosts",
+};
 
 export default async function LessonsPage({
   searchParams,
@@ -19,13 +24,13 @@ export default async function LessonsPage({
   const isUpdate = !!lessonToUpdate;
 
   return (
-    <Box>
+    <Paper sx={{ p: 2, width: "100%" }}>
       <Box my="12px">
         <FormDrawer isUpdate={isUpdate}>
           <LessonForm isUpdate={isUpdate} lessonToUpdate={lessonToUpdate} />
         </FormDrawer>
       </Box>
       <LessonsList lessons={lessons} />
-    </Box>
+    </Paper>
   );
 }

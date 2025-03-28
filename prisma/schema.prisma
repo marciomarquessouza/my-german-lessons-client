@@ -13,6 +13,7 @@ datasource db {
 model lessons {
   id          String   @id @default(cuid())
   name        String
+  slugName   String
   description String
 }
 

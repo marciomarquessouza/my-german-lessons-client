@@ -2,7 +2,6 @@ import * as React from "react";
 import { NextAppProvider } from "@toolpad/core/nextjs";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import LinearProgress from "@mui/material/LinearProgress";
 import type { Navigation } from "@toolpad/core/AppProvider";
 import Logo from "@/components/core/Logo";

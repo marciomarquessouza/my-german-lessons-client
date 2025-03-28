@@ -1,15 +1,17 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import { PageContainer } from "@toolpad/core";
+import { Box, Paper } from "@mui/material";
+import { getLessonById } from "@/services/lessons";
+import { getChallengesByLessonId } from "@/services/challenges";
 import ChallengeHeader from "@/components/challenges/ChallengeHeader";
 import FormDrawer from "@/components/core/FormDrawer";
 import ChallengeForm from "@/components/challenges/ChallengeForm";
-import { Box } from "@mui/material";
 import ChallengesList from "@/components/challenges/ChallengesList";
-import { getLessonById } from "@/services/lessons";
-import {
-  createChallenge,
-  getChallengesByLessonId,
-} from "@/services/challenges";
+
+export const metadata: Metadata = {
+  title: "LWG - Challenge",
+};
 
 export default async function ChallengesPage({
   params,
@@ -29,27 +31,29 @@ export default async function ChallengesPage({
   );
   const isUpdate = !!challengesToUpdate;
 
-  const title = lesson?.name || "";
+  const title = `${lesson?.name}`;
   const breadcrumbs = [
     { title: `Lessons`, path: "/" },
-    { title: `${lessonId}`, path: "/" },
+    { title: lesson?.slugName || lessonId, path: "/" },
   ];
 
   return (
-    <PageContainer title={title} breadcrumbs={breadcrumbs}>
-      <ChallengeHeader lesson={lesson} />
-      <Box marginY="12px">
-        <FormDrawer isUpdate={isUpdate}>
-          <ChallengeForm
-            lessonId={lessonId}
-            isUpdate={isUpdate}
-            challengeToUpdate={challengesToUpdate}
-          />
-        </FormDrawer>
-      </Box>
-      <Box>
-        <ChallengesList challenges={challenges} />
-      </Box>
-    </PageContainer>
+    <Paper sx={{ p: 2, width: "100%" }}>
+      <PageContainer title={title} breadcrumbs={breadcrumbs}>
+        <ChallengeHeader lesson={lesson} challenges={challenges} />
+        <Box marginY="12px">
+          <FormDrawer isUpdate={isUpdate}>
+            <ChallengeForm
+              lessonId={lessonId}
+              isUpdate={isUpdate}
+              challengeToUpdate={challengesToUpdate}
+            />
+          </FormDrawer>
+        </Box>
+        <Box>
+          <ChallengesList challenges={challenges} />
+        </Box>
+      </PageContainer>
+    </Paper>
   );
 }

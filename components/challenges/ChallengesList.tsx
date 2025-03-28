@@ -19,10 +19,12 @@ export default function ChallengesList({ challenges }: ChallengesListProps) {
         <TableHead>
           <TableRow>
             <TableCell>Question</TableCell>
+            <TableCell>Length</TableCell>
             <TableCell>Answer</TableCell>
+            <TableCell>Length</TableCell>
             <TableCell>Tip</TableCell>
-            <TableCell>Source Language</TableCell>
-            <TableCell>Target Language</TableCell>
+            <TableCell sx={{ maxWidth: 100 }}>Source Language</TableCell>
+            <TableCell sx={{ maxWidth: 100 }}>Target Language</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -32,8 +34,12 @@ export default function ChallengesList({ challenges }: ChallengesListProps) {
               <TableCell component="th" scope="row">
                 {challenge.question}
               </TableCell>
+              <TableCell component="th" scope="row">
+                {challenge.question.length}
+              </TableCell>
               <TableCell>{challenge.answer}</TableCell>
-              <TableCell>{challenge.tip}</TableCell>
+              <TableCell>{challenge.answer.length}</TableCell>
+              <TableCell sx={{ maxWidth: 300 }}>{challenge.tip}</TableCell>
               <TableCell>{challenge.sourceLanguage}</TableCell>
               <TableCell>{challenge.targetLanguage}</TableCell>
               <TableCell align="right">

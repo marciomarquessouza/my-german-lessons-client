@@ -3,6 +3,7 @@ import isNil from "lodash/isNil";
 import { prisma } from "@/lib/prisma";
 import { Challenge } from "../data/challenges";
 import { httpClient } from "@/lib/httpClient";
+import { Lesson } from "@/data/lessons";
 
 function parseChallengeForm(
   lessonId: string,
@@ -62,4 +63,18 @@ export const getChallengeById = async (
   id: string
 ): Promise<Challenge | null> => {
   return await prisma.challenges.findUnique({ where: { id } });
+};
+
+export const createJsonFile = async (
+  lesson?: Lesson | null,
+  challenges?: Challenge[]
+) => {
+  if (isNil(lesson) || isNil(challenges)) {
+    throw new Error(" Missing Lesson and Challenges");
+  }
+
+  return await httpClient.POST("/lessons/files", {
+    lesson,
+    challenges,
+  });
 };

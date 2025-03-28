@@ -5,7 +5,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "open-browser": "open http://localhost:3000",
+    "start-with-browser": "open http://localhost:3000 && next start"
   },
   "dependencies": {
     "@emotion/react": "^11",
