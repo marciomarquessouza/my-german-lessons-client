@@ -1,13 +1,7 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import { PageContainer } from "@toolpad/core";
-import {
-  Box,
-  Paper,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
-} from "@mui/material";
+import { Box, Paper } from "@mui/material";
 import { getLessonById } from "@/services/lessons";
 import { getChallengesByLessonId } from "@/services/challenges";
 import ChallengeHeader from "@/components/challenges/ChallengeHeader";

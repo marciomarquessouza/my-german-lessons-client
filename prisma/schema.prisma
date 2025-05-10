@@ -10,8 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model trails {
+  id              String   @id @default(cuid())
+  name            String
+  slugName        String
+  title           String
+  lessonsQnt      Int      @default(0)
+}
+
 model lessons {
   id              String   @id @default(cuid())
+  trailId         String   @default("")
   name            String
   slugName        String
   description     String

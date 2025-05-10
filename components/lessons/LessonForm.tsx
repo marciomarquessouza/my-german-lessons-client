@@ -24,6 +24,7 @@ export interface LessonFormProps {
 }
 
 const defaultState: Lesson = {
+  trailId: "",
   id: "",
   name: "",
   slugName: "",

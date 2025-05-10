@@ -1,14 +1,16 @@
 import { promises as fs } from "fs";
 
-async function createDocument(fileName: string, document: string) {
-  const baseAddress =
-    "/Users/user/projects/my-projects/godot/learning-with-ghosts/data/lessons/";
-  const filePath = baseAddress + fileName;
+async function createDocument(
+  path: string,
+  fileName: string,
+  document: string
+) {
+  const filePath = path + fileName;
   await fs.writeFile(filePath, document);
 }
 
 async function readDocument(fileName: string) {
-  console.log("#HERE process.cwd()", process.cwd());
+  throw new Error("Not implemented");
 }
 
 export const fileServices = {

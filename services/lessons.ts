@@ -8,8 +8,10 @@ import { Lesson } from "@/data/lessons";
 import { Challenge } from "@/data/challenges";
 import { fileServices } from "@/lib/fileServices";
 import { getChallengesByLessonId } from "./challenges";
+import { GODOT_LESSONS_PATH } from "@/constants/services";
 
 export const createLesson = async (formData: FormData): Promise<void> => {
+  const trailId: string = formData.get("trailId") as string;
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const description = formData.get("description") as string;
@@ -18,10 +20,12 @@ export const createLesson = async (formData: FormData): Promise<void> => {
   const floorPosition = Number(formData.get("floorPosition"));
   const challengesQnt = 0;
 
-  if (!name || !description) {
+  if (!name || !description || !trailId) {
     throw new Error("Empty Field");
   }
+
   const lesson: Omit<Lesson, "id"> = {
+    trailId,
     name,
     description,
     slugName,
@@ -38,6 +42,7 @@ export const updateLesson = async (
   id: string,
   formData: FormData
 ): Promise<void> => {
+  const trailId: string = formData.get("trailId") as string;
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const description = formData.get("description") as string;
@@ -49,7 +54,7 @@ export const updateLesson = async (
     throw new Error("Empty id");
   }
 
-  if (!name || !description) {
+  if (!name || !description || trailId) {
     throw new Error("Empty Field");
   }
 
@@ -57,6 +62,7 @@ export const updateLesson = async (
   const challengesQnt = challenges.length;
 
   const lesson: Omit<Lesson, "id"> = {
+    trailId,
     name,
     slugName,
     description,
@@ -116,7 +122,11 @@ export const exportJSONLessonDocument = async (
 
     const lessonDocumentString = JSON.stringify(lessonDocument);
     const fileName = snakeCase(lesson.name.toLowerCase()) + ".json";
-    await fileServices.createDocument(fileName, lessonDocumentString);
+    await fileServices.createDocument(
+      GODOT_LESSONS_PATH,
+      fileName,
+      lessonDocumentString
+    );
     return fileName;
   } catch (error: any) {
     const message = error?.message || error?.msg || "error creating document";
