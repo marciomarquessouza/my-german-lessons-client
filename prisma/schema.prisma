@@ -11,10 +11,14 @@ datasource db {
 }
 
 model lessons {
-  id          String   @id @default(cuid())
-  name        String
-  slugName   String
-  description String
+  id              String   @id @default(cuid())
+  name            String
+  slugName        String
+  description     String
+  doorTitle       String   @default("")
+  challengesQnt   Int      @default(0)
+  roomPosition    Int      @default(0)
+  floorPosition   Int      @default(0)
 }
 
 model challenges {
@@ -25,4 +29,36 @@ model challenges {
   question        String
   answer          String
   tip             String
+}
+
+model stamps {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  type            String
+  class           String
+}
+
+model opponent {
+  id              String   @id @default(cuid())
+  name            String
+}
+
+model lessonStamps {
+  id              String   @id @default(cuid())
+  lessonId        String
+  stampId         String
+  price           Int      @default(0)
+  penalty         Int      @default(0)
+  quantity        Int      @default(0)
+}
+
+model rounds {
+  id              String   @id @default(cuid())
+  lessonId        String
+  opponentId      String
+  turns           Int
+  challengesLimit Int      @default(0)
+  extraQuestion   Int      @default(0)
+  assistants      Int      @default(0)
 }

@@ -7,16 +7,29 @@ import { prisma } from "@/lib/prisma";
 import { Lesson } from "@/data/lessons";
 import { Challenge } from "@/data/challenges";
 import { fileServices } from "@/lib/fileServices";
+import { getChallengesByLessonId } from "./challenges";
 
 export const createLesson = async (formData: FormData): Promise<void> => {
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const description = formData.get("description") as string;
+  const doorTitle = formData.get("doorTitle") as string;
+  const roomPosition = Number(formData.get("roomPosition"));
+  const floorPosition = Number(formData.get("floorPosition"));
+  const challengesQnt = 0;
 
   if (!name || !description) {
     throw new Error("Empty Field");
   }
-  const lesson: Omit<Lesson, "id"> = { name, description, slugName };
+  const lesson: Omit<Lesson, "id"> = {
+    name,
+    description,
+    slugName,
+    roomPosition,
+    floorPosition,
+    challengesQnt,
+    doorTitle,
+  };
 
   await prisma.lessons.create({ data: lesson });
 };
@@ -28,6 +41,9 @@ export const updateLesson = async (
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const description = formData.get("description") as string;
+  const doorTitle = formData.get("doorTitle") as string;
+  const roomPosition = Number(formData.get("roomPosition"));
+  const floorPosition = Number(formData.get("floorPosition"));
 
   if (isNil(id)) {
     throw new Error("Empty id");
@@ -37,7 +53,18 @@ export const updateLesson = async (
     throw new Error("Empty Field");
   }
 
-  const lesson: Omit<Lesson, "id"> = { name, slugName, description };
+  const challenges = await getChallengesByLessonId(id);
+  const challengesQnt = challenges.length;
+
+  const lesson: Omit<Lesson, "id"> = {
+    name,
+    slugName,
+    description,
+    doorTitle,
+    roomPosition,
+    floorPosition,
+    challengesQnt,
+  };
   await prisma.lessons.update({
     where: { id },
     data: lesson,

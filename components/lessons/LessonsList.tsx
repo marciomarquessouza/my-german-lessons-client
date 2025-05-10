@@ -21,9 +21,11 @@ export default function LessonsList({ lessons }: LessonsListProps) {
         <TableHead>
           <TableRow>
             <TableCell>Name</TableCell>
-            <TableCell>Slug Name</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell align="right">Actions</TableCell>
+            <TableCell>Door Title</TableCell>
+            <TableCell align="center">Challenges</TableCell>
+            <TableCell align="center">Room</TableCell>
+            <TableCell align="center">Floor</TableCell>
+            <TableCell align="center">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -32,16 +34,20 @@ export default function LessonsList({ lessons }: LessonsListProps) {
               <TableCell component="th" scope="row">
                 <Link href={`/challenges/${lesson.id}`}>{lesson.name}</Link>
               </TableCell>
-              <TableCell scope="row">
-                <Link href={`/challenges/${lesson.id}`}>{lesson.slugName}</Link>
-              </TableCell>
               <TableCell>
                 <Link href={`/challenges/${lesson.id}`}>
-                  {lesson.description}
+                  {lesson.doorTitle}
                 </Link>
               </TableCell>
-              <TableCell align="right">
-                <LessonActions lessonId={lesson.id} />
+              <TableCell align="center">
+                <Link href={`/challenges/${lesson.id}`}>
+                  {lesson.challengesQnt}
+                </Link>
+              </TableCell>
+              <TableCell align="center">{lesson.roomPosition}</TableCell>
+              <TableCell align="center">{lesson.floorPosition}</TableCell>
+              <TableCell align="center">
+                <LessonActions lesson={lesson} />
               </TableCell>
             </TableRow>
           ))}

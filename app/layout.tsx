@@ -2,6 +2,7 @@ import * as React from "react";
 import { NextAppProvider } from "@toolpad/core/nextjs";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
+import LocalPostOfficeIcon from "@mui/icons-material/LocalPostOffice";
 import LinearProgress from "@mui/material/LinearProgress";
 import type { Navigation } from "@toolpad/core/AppProvider";
 import Logo from "@/components/core/Logo";
@@ -20,6 +21,11 @@ const NAVIGATION: Navigation = [
     icon: <CollectionsBookmarkIcon />,
   },
   { kind: "divider" },
+  {
+    segment: "stamps",
+    title: "Stamps",
+    icon: <LocalPostOfficeIcon />,
+  },
 ];
 
 const BRANDING = {

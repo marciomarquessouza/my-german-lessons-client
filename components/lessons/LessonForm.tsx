@@ -5,6 +5,8 @@ import {
   Box,
   Button,
   FormControl,
+  IconButton,
+  InputAdornment,
   InputLabel,
   OutlinedInput,
 } from "@mui/material";
@@ -14,6 +16,7 @@ import { useNotifications } from "@toolpad/core";
 import { Lesson } from "@/data/lessons";
 import { useEffect, useState } from "react";
 import { createLesson, updateLesson } from "@/services/lessons";
+import DownloadIcon from "@mui/icons-material/Download";
 
 export interface LessonFormProps {
   lessonToUpdate?: Lesson;
@@ -25,6 +28,10 @@ const defaultState: Lesson = {
   name: "",
   slugName: "",
   description: "",
+  doorTitle: "",
+  challengesQnt: 0,
+  roomPosition: 0,
+  floorPosition: 0,
 };
 
 export default function LessonForm({
@@ -44,6 +51,10 @@ export default function LessonForm({
     const inputName = event.currentTarget.name;
     const inputValue = event.currentTarget.value;
     setLesson((state) => ({ ...state, [inputName]: inputValue }));
+  };
+
+  const handleFillDoorTitle = () => {
+    setLesson((state) => ({ ...state, doorTitle: state.name }));
   };
 
   const handleSubmit = async (formdata: FormData) => {
@@ -105,6 +116,58 @@ export default function LessonForm({
               label="Description"
               onChange={handleOnChange}
               value={lesson?.description || ""}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={2}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="lesson-roomPosition">Room Position</InputLabel>
+            <OutlinedInput
+              id="lesson-roomPosition"
+              name="roomPosition"
+              label="Room Position"
+              type="number"
+              onChange={handleOnChange}
+              value={lesson?.roomPosition || 0}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={2}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="lesson-floorPosition">
+              Floor Position
+            </InputLabel>
+            <OutlinedInput
+              id="lesson-floorPosition"
+              name="floorPosition"
+              label="Floor Position"
+              type="number"
+              onChange={handleOnChange}
+              value={lesson?.floorPosition || 0}
+            />
+          </FormControl>
+        </Grid>
+        <Grid size={8}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="lesson-doorTitle">Door Title</InputLabel>
+            <OutlinedInput
+              id="lesson-doorTitle"
+              name="doorTitle"
+              label="Door Title"
+              onChange={handleOnChange}
+              value={lesson?.doorTitle || ""}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    color="primary"
+                    sx={{ p: "10px" }}
+                    aria-label="copy-name"
+                    onClick={handleFillDoorTitle}
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </InputAdornment>
+              }
             />
           </FormControl>
         </Grid>

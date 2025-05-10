@@ -1,9 +1,8 @@
 import { promises as fs } from "fs";
 
 async function createDocument(fileName: string, document: string) {
-  console.log("#HERE process.cwd()", process.cwd());
   const baseAddress =
-    "/Users/user/projects/my-projects/godot/learning-with-ghosts/lessons/";
+    "/Users/user/projects/my-projects/godot/learning-with-ghosts/data/lessons/";
   const filePath = baseAddress + fileName;
   await fs.writeFile(filePath, document);
 }
