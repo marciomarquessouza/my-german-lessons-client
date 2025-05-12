@@ -15,17 +15,17 @@ model trails {
   name            String
   slugName        String
   title           String
-  lessonsQnt      Int      @default(0)
+  rooms           Int      @default(0)
+  floors          Int      @default(0)
 }
 
 model lessons {
   id              String   @id @default(cuid())
-  trailId         String   @default("")
+  trailId         String
   name            String
   slugName        String
   description     String
   doorTitle       String   @default("")
-  challengesQnt   Int      @default(0)
   roomPosition    Int      @default(0)
   floorPosition   Int      @default(0)
 }

@@ -5,6 +5,7 @@ import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import LocalPostOfficeIcon from "@mui/icons-material/LocalPostOffice";
 import LinearProgress from "@mui/material/LinearProgress";
 import type { Navigation } from "@toolpad/core/AppProvider";
+import HikingIcon from "@mui/icons-material/Hiking";
 import Logo from "@/components/core/Logo";
 
 import theme from "../theme";
@@ -17,7 +18,13 @@ const NAVIGATION: Navigation = [
   { kind: "divider" },
   {
     segment: "",
-    title: "Lessons",
+    title: "Trails",
+    icon: <HikingIcon />,
+  },
+  { kind: "divider" },
+  {
+    segment: "lessons/all",
+    title: "All Lessons",
     icon: <CollectionsBookmarkIcon />,
   },
   { kind: "divider" },

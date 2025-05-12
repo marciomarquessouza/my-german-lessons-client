@@ -6,36 +6,34 @@ import { useDialogs, useNotifications } from "@toolpad/core";
 import { useRouter } from "next/navigation";
 import BasicDialog from "../core/BasicDialog";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
-import { removeLesson } from "@/services/lessons";
 import { useCallback, useState } from "react";
-import { Lesson } from "@/data/lessons";
-import { createJsonFile, getChallengesByLessonId } from "@/services/challenges";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import { usePathname } from "next/navigation";
+import { Trail } from "@/data/trails";
+import { createJsonFile, removeTrail } from "@/services/trails";
+import { getLessonsByTrailId } from "@/services/lessons";
 
-export interface LessonActionsProps {
-  lesson: Lesson;
+export interface TrailActionsProps {
+  trail: Trail;
 }
 
-export default function LessonActions({ lesson }: LessonActionsProps) {
+export default function TrailActions({ trail }: TrailActionsProps) {
   const [loading, setLoading] = useState({ action: "", isLoading: false });
   const notifications = useNotifications();
   const router = useRouter();
   const dialog = useDialogs();
-  const pathname = usePathname();
 
-  const handleOpenLesson = () => {
-    router.push(`/lessons/${lesson.trailId}/challenges/${lesson.id}`);
+  const handleOpen = () => {
+    router.push(`/lessons/${trail.id}`);
   };
 
-  const handleEditLesson = () => {
-    router.push(`${pathname}/?updateLessonId=${lesson.id}`);
+  const handleEdit = () => {
+    router.push(`/?updateTrailId=${trail.id}`);
   };
 
   const handleDeleteClick = async () => {
     try {
       setLoading({ action: "delete", isLoading: true });
-      await removeLesson(lesson.id);
+      await removeTrail(trail.id);
       notifications.show("Lesson removed", {
         autoHideDuration: 3000,
       });
@@ -54,8 +52,8 @@ export default function LessonActions({ lesson }: LessonActionsProps) {
   const handleExportJson = useCallback(async () => {
     try {
       setLoading({ action: "export", isLoading: true });
-      const challenges = await getChallengesByLessonId(lesson.id);
-      const response = await createJsonFile(lesson, challenges);
+      const lessons = await getLessonsByTrailId(trail.id);
+      const response = await createJsonFile(trail, lessons);
       if (response.status === 200) {
         notifications.show(`File Create: ${response.message}`, {
           autoHideDuration: 3000,
@@ -72,12 +70,12 @@ export default function LessonActions({ lesson }: LessonActionsProps) {
     } finally {
       setLoading({ action: "export", isLoading: false });
     }
-  }, [lesson, notifications]);
+  }, [trail, notifications]);
 
   const confirmationDialog = async (onConfirmation: () => Promise<void>) => {
     await dialog.open(BasicDialog, {
       title: "Confirmation",
-      content: "Confirm the remotion of this Lesson?",
+      content: "Confirm the remotion of this Trail?",
       onConfirmation,
     });
   };
@@ -88,7 +86,7 @@ export default function LessonActions({ lesson }: LessonActionsProps) {
         aria-label="open"
         size="small"
         color="primary"
-        onClick={handleOpenLesson}
+        onClick={handleOpen}
       >
         <FileOpenIcon fontSize="inherit" />
       </IconButton>
@@ -96,7 +94,7 @@ export default function LessonActions({ lesson }: LessonActionsProps) {
         aria-label="edit"
         size="small"
         color="primary"
-        onClick={handleEditLesson}
+        onClick={handleEdit}
       >
         <EditIcon fontSize="inherit" />
       </IconButton>

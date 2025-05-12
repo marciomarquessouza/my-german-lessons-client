@@ -3,5 +3,6 @@ export interface Trail {
   name: string;
   slugName: string;
   title: string;
-  lessonsQnt: number;
+  rooms: number;
+  floors: number;
 }

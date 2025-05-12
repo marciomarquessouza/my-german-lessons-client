@@ -5,7 +5,6 @@ export interface Lesson {
   slugName: string;
   description: string;
   doorTitle: string;
-  challengesQnt: number;
   roomPosition: number;
   floorPosition: number;
 }

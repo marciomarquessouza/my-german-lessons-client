@@ -18,7 +18,6 @@ export const createLesson = async (formData: FormData): Promise<void> => {
   const doorTitle = formData.get("doorTitle") as string;
   const roomPosition = Number(formData.get("roomPosition"));
   const floorPosition = Number(formData.get("floorPosition"));
-  const challengesQnt = 0;
 
   if (!name || !description || !trailId) {
     throw new Error("Empty Field");
@@ -31,7 +30,6 @@ export const createLesson = async (formData: FormData): Promise<void> => {
     slugName,
     roomPosition,
     floorPosition,
-    challengesQnt,
     doorTitle,
   };
 
@@ -54,12 +52,9 @@ export const updateLesson = async (
     throw new Error("Empty id");
   }
 
-  if (!name || !description || trailId) {
+  if (!name || !description || !trailId) {
     throw new Error("Empty Field");
   }
-
-  const challenges = await getChallengesByLessonId(id);
-  const challengesQnt = challenges.length;
 
   const lesson: Omit<Lesson, "id"> = {
     trailId,
@@ -69,7 +64,6 @@ export const updateLesson = async (
     doorTitle,
     roomPosition,
     floorPosition,
-    challengesQnt,
   };
   await prisma.lessons.update({
     where: { id },
@@ -90,6 +84,12 @@ export const getAllLessons = async (): Promise<Lesson[]> => {
 
 export const getLessonById = async (id: string): Promise<Lesson | null> => {
   return await prisma.lessons.findUnique({ where: { id } });
+};
+
+export const getLessonsByTrailId = async (
+  trailId: string
+): Promise<Lesson[]> => {
+  return await prisma.lessons.findMany({ where: { trailId } });
 };
 
 export const exportJSONLessonDocument = async (

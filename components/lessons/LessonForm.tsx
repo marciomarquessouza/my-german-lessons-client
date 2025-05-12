@@ -8,17 +8,23 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  MenuItem,
   OutlinedInput,
+  Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import Grid from "@mui/system/Grid";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useNotifications } from "@toolpad/core";
 import { Lesson } from "@/data/lessons";
 import { useEffect, useState } from "react";
 import { createLesson, updateLesson } from "@/services/lessons";
 import DownloadIcon from "@mui/icons-material/Download";
+import { Trail } from "@/data/trails";
 
 export interface LessonFormProps {
+  trailId: string;
+  trails: Trail[];
   lessonToUpdate?: Lesson;
   isUpdate?: boolean;
 }
@@ -30,12 +36,13 @@ const defaultState: Lesson = {
   slugName: "",
   description: "",
   doorTitle: "",
-  challengesQnt: 0,
   roomPosition: 0,
   floorPosition: 0,
 };
 
 export default function LessonForm({
+  trailId,
+  trails,
   lessonToUpdate,
   isUpdate = false,
 }: LessonFormProps) {
@@ -45,6 +52,7 @@ export default function LessonForm({
   const [lesson, setLesson] = useState<Lesson>(
     isUpdate && !!lessonToUpdate ? lessonToUpdate : defaultState
   );
+  const pathname = usePathname();
 
   const handleOnChange = (
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -52,6 +60,12 @@ export default function LessonForm({
     const inputName = event.currentTarget.name;
     const inputValue = event.currentTarget.value;
     setLesson((state) => ({ ...state, [inputName]: inputValue }));
+  };
+
+  const handleOnSelect = (event: SelectChangeEvent<unknown>) => {
+    const selectName = event.target.name;
+    const selectValue = event.target.value;
+    setLesson((state) => ({ ...state, [selectName]: selectValue }));
   };
 
   const handleFillDoorTitle = () => {
@@ -70,7 +84,7 @@ export default function LessonForm({
       });
       setLesson(defaultState);
       router.refresh();
-      isUpdate && router.push("/");
+      isUpdate && router.push(pathname);
     } catch (error) {
       console.log(error);
       notifications.show("error to create/update", {
@@ -82,7 +96,7 @@ export default function LessonForm({
 
   const cancelUpdate = () => {
     setLesson(defaultState);
-    isUpdate && router.push("/");
+    isUpdate && router.push(pathname);
   };
 
   useEffect(() => {
@@ -148,7 +162,7 @@ export default function LessonForm({
             />
           </FormControl>
         </Grid>
-        <Grid size={8}>
+        <Grid size={5}>
           <FormControl fullWidth>
             <InputLabel htmlFor="lesson-doorTitle">Door Title</InputLabel>
             <OutlinedInput
@@ -170,6 +184,26 @@ export default function LessonForm({
                 </InputAdornment>
               }
             />
+          </FormControl>
+        </Grid>
+        <Grid size={3}>
+          <FormControl fullWidth>
+            <InputLabel id="lesson-trail">Trail</InputLabel>
+            <Select
+              labelId="lesson-trail"
+              id="lesson-trail"
+              name="trailId"
+              value={trailId || trails[0]?.id || ""}
+              onChange={handleOnSelect}
+              autoWidth
+              label="Trail"
+            >
+              {trails.map((trail) => (
+                <MenuItem key={trail.id} value={trail.id}>
+                  {`${trail.name} - ${trail.title}`}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
         </Grid>
         <Grid size={12}>

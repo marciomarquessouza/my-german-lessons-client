@@ -15,6 +15,10 @@ export interface LessonsListProps {
 }
 
 export default function LessonsList({ lessons }: LessonsListProps) {
+  const getChallengeUrl = (trailId: string, lessonId: string) => {
+    return `/lessons/${trailId}/challenges/${lessonId}`;
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -22,7 +26,6 @@ export default function LessonsList({ lessons }: LessonsListProps) {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Door Title</TableCell>
-            <TableCell align="center">Challenges</TableCell>
             <TableCell align="center">Room</TableCell>
             <TableCell align="center">Floor</TableCell>
             <TableCell align="center">Actions</TableCell>
@@ -32,16 +35,13 @@ export default function LessonsList({ lessons }: LessonsListProps) {
           {lessons.map((lesson) => (
             <TableRow key={lesson.id}>
               <TableCell component="th" scope="row">
-                <Link href={`/challenges/${lesson.id}`}>{lesson.name}</Link>
-              </TableCell>
-              <TableCell>
-                <Link href={`/challenges/${lesson.id}`}>
-                  {lesson.doorTitle}
+                <Link href={getChallengeUrl(lesson.trailId, lesson.id)}>
+                  {lesson.name}
                 </Link>
               </TableCell>
-              <TableCell align="center">
-                <Link href={`/challenges/${lesson.id}`}>
-                  {lesson.challengesQnt}
+              <TableCell>
+                <Link href={getChallengeUrl(lesson.trailId, lesson.id)}>
+                  {lesson.doorTitle}
                 </Link>
               </TableCell>
               <TableCell align="center">{lesson.roomPosition}</TableCell>

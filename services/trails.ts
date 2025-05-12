@@ -8,11 +8,14 @@ import snakeCase from "lodash/snakeCase";
 import { Lesson } from "@/data/lessons";
 import { fileServices } from "@/lib/fileServices";
 import { GODOT_TRAILS_PATH } from "@/constants/services";
+import { httpClient } from "@/lib/httpClient";
 
 export const createTrail = async (formData: FormData): Promise<void> => {
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const title: string = formData.get("title") as string;
+  const floors = Number(formData.get("floors"));
+  const rooms = Number(formData.get("rooms"));
 
   if (!name || !title) {
     throw new Error("Empty Field");
@@ -22,7 +25,8 @@ export const createTrail = async (formData: FormData): Promise<void> => {
     name,
     slugName,
     title,
-    lessonsQnt: 0,
+    rooms,
+    floors,
   };
 
   await prisma.trails.create({ data: trail });
@@ -32,6 +36,8 @@ export const updateTrail = async (id: string, formData: FormData) => {
   const name: string = formData.get("name") as string;
   const slugName = snakeCase(name.toLowerCase());
   const title: string = formData.get("title") as string;
+  const floors = Number(formData.get("floors"));
+  const rooms = Number(formData.get("rooms"));
 
   if (isNil(id)) {
     throw new Error("Empty id");
@@ -45,10 +51,11 @@ export const updateTrail = async (id: string, formData: FormData) => {
     name,
     slugName,
     title,
-    lessonsQnt: 0,
+    floors,
+    rooms,
   };
 
-  await prisma.lessons.update({
+  await prisma.trails.update({
     where: { id },
     data: trail,
   });
@@ -67,6 +74,17 @@ export const getAllTrails = async (): Promise<Trail[]> => {
 
 export const getTrailById = async (id: string): Promise<Trail | null> => {
   return await prisma.trails.findUnique({ where: { id } });
+};
+
+export const createJsonFile = async (trail: Trail, lessons: Lesson[]) => {
+  if (isNil(trail) || isNil(lessons)) {
+    throw new Error(" Missing Lesson and Challenges");
+  }
+
+  return await httpClient.POST("/trails/files", {
+    trail,
+    lessons,
+  });
 };
 
 export const exportJSONTrailDocument = async (
@@ -107,6 +125,6 @@ export const exportJSONTrailDocument = async (
     return fileName;
   } catch (error: any) {
     const message = error?.message || error?.msg || "error creating document";
-    throw new Error(error);
+    throw new Error(message);
   }
 };

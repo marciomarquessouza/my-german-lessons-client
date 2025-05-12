@@ -9,6 +9,7 @@ import FormDrawer from "@/components/core/FormDrawer";
 import ChallengeForm from "@/components/challenges/ChallengeForm";
 import ChallengesList from "@/components/challenges/ChallengesList";
 import ExportGodot from "@/components/core/ExportGodot";
+import { getTrailById } from "@/services/trails";
 
 export const metadata: Metadata = {
   title: "LWG - Challenge",
@@ -25,6 +26,7 @@ export default async function ChallengesPage({
   const searchParamsResponse = await searchParams;
   const updateChallengeId = searchParamsResponse?.updateChallengeId;
   const lesson = await getLessonById(lessonId);
+  const trail = await getTrailById(lesson?.trailId || "");
   const challenges = !!lesson ? await getChallengesByLessonId(lessonId) : [];
 
   const challengesToUpdate = challenges?.find(
@@ -34,8 +36,15 @@ export default async function ChallengesPage({
 
   const title = `${lesson?.name}`;
   const breadcrumbs = [
-    { title: `Lessons`, path: "/" },
-    { title: lesson?.slugName || lessonId, path: "/" },
+    {
+      title: `Home`,
+      path: `/`,
+    },
+    {
+      title: `${trail?.name}`,
+      path: `/lessons/${lesson?.trailId || "all"}`,
+    },
+    { title: `${lesson?.slugName}` },
   ];
 
   return (
