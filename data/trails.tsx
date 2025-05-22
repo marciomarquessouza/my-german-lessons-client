@@ -1,49 +1,44 @@
 "use client";
-import { LANGUAGES } from "@/constants/languages";
 import { DataModel, DataSource, DataSourceCache } from "@toolpad/core";
 import { z } from "zod";
 
-export interface Challenge {
+export interface Trail {
   id: string;
-  lessonId: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  question: string;
-  answer: string;
-  tip: string;
+  name: string;
+  slugName: string;
+  title: string;
+  rooms: number;
+  floors: number;
 }
 
-export type ChallengeModel = Challenge & DataModel;
+export type TrailModel = Trail & DataModel;
 
-const API_URL = "/api/challenges";
+const API_URL = "/api/trails";
 
-export const challengesDataSource: DataSource<ChallengeModel> = {
+export const trailsDataSource: DataSource<TrailModel> = {
   fields: [
+    { field: "name", headerName: "Name", width: 250 },
+    { field: "title", headerName: "Title", width: 400 },
     {
-      field: "sourceLanguage",
-      headerName: "Source",
-      type: "singleSelect",
+      field: "rooms",
+      headerName: "Rooms",
+      type: "number",
       align: "center",
       headerAlign: "center",
-      valueOptions: LANGUAGES,
     },
     {
-      field: "targetLanguage",
-      headerName: "Target",
-      type: "singleSelect",
+      field: "floors",
+      headerName: "Floors",
+      type: "number",
       align: "center",
       headerAlign: "center",
-      valueOptions: LANGUAGES,
     },
-    { field: "question", headerName: "Question", width: 250 },
-    { field: "answer", headerName: "Answer", width: 250 },
     {
-      field: "lessonId",
-      headerName: "Lesson",
-      type: "singleSelect",
+      field: "open-lessons",
+      type: "actions",
+      headerName: "Lessons",
       align: "center",
       headerAlign: "center",
-      width: 200,
     },
   ],
   getMany: async ({ paginationModel, filterModel, sortModel }) => {
@@ -97,15 +92,14 @@ export const challengesDataSource: DataSource<ChallengeModel> = {
       headers: { "Content-Type": "application/json" },
     });
     const resJson = await res.json();
+
     if (!res.ok) {
       throw new Error(resJson.error);
     }
     return resJson;
   },
   deleteOne: async (id) => {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     const resJson = await res.json();
 
     if (!res.ok) {
@@ -114,13 +108,13 @@ export const challengesDataSource: DataSource<ChallengeModel> = {
     return resJson;
   },
   validate: z.object({
-    question: z
+    name: z
+      .string({ required_error: "name is required" })
+      .nonempty("name is required"),
+    title: z
       .string({ required_error: "title is required" })
-      .nonempty("question is required"),
-    answer: z
-      .string({ required_error: "answer is required" })
-      .nonempty("answer is required"),
+      .nonempty("title is required"),
   })["~standard"].validate,
 };
 
-export const challengesCache = new DataSourceCache();
+export const trailsCache = new DataSourceCache();

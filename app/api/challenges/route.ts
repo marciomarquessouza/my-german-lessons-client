@@ -1,46 +1,81 @@
-"use server";
-import isNil from "lodash/isNil";
-import { Challenge } from "@/data/challenges";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import type {
+  GridFilterItem,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
+import type { OmitId } from "@toolpad/core/Crud";
+import { Challenge } from "@/generated/prisma";
+import { ChallengeModel } from "@/data/challenges";
+import { createChallenge, getAllChallenges } from "@/services/challenges";
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const emptyRequiredFields = [
-      "lessonId",
-      "sourceLanguage",
-      "targetLanguage",
-      "question",
-      "answer",
-    ].filter((key) => isNil(body[key]));
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
 
-    if (emptyRequiredFields.length > 0) {
-      throw new Error(
-        `The required fields ${emptyRequiredFields.join("|")} are empty`
-      );
-    }
+  const page: GridPaginationModel["page"] =
+    Number(searchParams.get("page")) || 0;
+  const pageSize: GridPaginationModel["pageSize"] =
+    Number(searchParams.get("pageSize")) || 10;
+  const sortModel: GridSortModel = searchParams.get("sort")
+    ? JSON.parse(searchParams.get("sort")!)
+    : [];
+  const filterModel: GridFilterItem[] = searchParams.get("filter")
+    ? JSON.parse(searchParams.get("filter")!)
+    : [];
 
-    const challenge = body as Challenge;
+  const trails = await getAllChallenges();
 
-    await prisma.challenges.create({ data: challenge });
+  let filteredItems = [...trails];
 
-    return Response.json({ message: "New challenged created" });
-  } catch (error: any) {
-    const errorMessage = error?.message || error?.msg || "Unexpected Error";
-    return new Response(errorMessage, {
-      status: 400,
+  if (filterModel?.length > 0) {
+    filterModel.forEach(({ field, value, operator }) => {
+      if (!field || value == null) {
+        return;
+      }
+
+      filteredItems = filteredItems.filter((item) => {
+        // @ts-ignore
+        const itemValue = item[field];
+
+        switch (operator) {
+          case "contains":
+            return String(itemValue)
+              .toLowerCase()
+              .includes(String(value).toLowerCase());
+          case "is":
+          case "equals":
+            return itemValue === value;
+          case "startsWith":
+            return String(itemValue)
+              .toLowerCase()
+              .startsWith(String(value).toLowerCase());
+          case "endsWith":
+            return String(itemValue)
+              .toLowerCase()
+              .endsWith(String(value).toLowerCase());
+          case ">":
+            return (itemValue as number) > value;
+          case "<":
+            return (itemValue as number) < value;
+          default:
+            return true;
+        }
+      });
     });
   }
+
+  const start = page * pageSize;
+  const end = start + pageSize;
+  const paginatedItems = filteredItems.slice(start, end);
+
+  return NextResponse.json({
+    items: paginatedItems,
+    itemCount: filteredItems.length,
+  });
 }
 
-export async function GET() {
-  try {
-    const challenges = await prisma.challenges.findMany();
-    return Response.json({ challenges });
-  } catch (error: any) {
-    const errorMessage = error?.message || error?.msg || "Unexpected Error";
-    return new Response(errorMessage, {
-      status: 400,
-    });
-  }
+export async function POST(req: NextRequest) {
+  const newItem: Partial<OmitId<ChallengeModel>> = await req.json();
+  const createdItem = await createChallenge(newItem as Omit<Challenge, "id">);
+  return NextResponse.json(createdItem, { status: 201 });
 }

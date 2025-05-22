@@ -1,50 +1,23 @@
 "use client";
-import { LANGUAGES } from "@/constants/languages";
 import { DataModel, DataSource, DataSourceCache } from "@toolpad/core";
 import { z } from "zod";
 
-export interface Challenge {
+export interface User {
   id: string;
-  lessonId: string;
-  sourceLanguage: string;
-  targetLanguage: string;
-  question: string;
-  answer: string;
-  tip: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
-export type ChallengeModel = Challenge & DataModel;
+export type UserModel = User & DataModel;
 
-const API_URL = "/api/challenges";
+const API_URL = "/api/users";
 
-export const challengesDataSource: DataSource<ChallengeModel> = {
+export const usersDataSource: DataSource<UserModel> = {
   fields: [
-    {
-      field: "sourceLanguage",
-      headerName: "Source",
-      type: "singleSelect",
-      align: "center",
-      headerAlign: "center",
-      valueOptions: LANGUAGES,
-    },
-    {
-      field: "targetLanguage",
-      headerName: "Target",
-      type: "singleSelect",
-      align: "center",
-      headerAlign: "center",
-      valueOptions: LANGUAGES,
-    },
-    { field: "question", headerName: "Question", width: 250 },
-    { field: "answer", headerName: "Answer", width: 250 },
-    {
-      field: "lessonId",
-      headerName: "Lesson",
-      type: "singleSelect",
-      align: "center",
-      headerAlign: "center",
-      width: 200,
-    },
+    { field: "name", headerName: "Name", width: 250 },
+    { field: "email", headerName: "Email", width: 250 },
+    { field: "password", headerName: "Password", width: 250 },
   ],
   getMany: async ({ paginationModel, filterModel, sortModel }) => {
     const queryParams = new URLSearchParams();
@@ -97,15 +70,14 @@ export const challengesDataSource: DataSource<ChallengeModel> = {
       headers: { "Content-Type": "application/json" },
     });
     const resJson = await res.json();
+
     if (!res.ok) {
       throw new Error(resJson.error);
     }
     return resJson;
   },
   deleteOne: async (id) => {
-    const res = await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     const resJson = await res.json();
 
     if (!res.ok) {
@@ -114,13 +86,16 @@ export const challengesDataSource: DataSource<ChallengeModel> = {
     return resJson;
   },
   validate: z.object({
-    question: z
-      .string({ required_error: "title is required" })
-      .nonempty("question is required"),
-    answer: z
-      .string({ required_error: "answer is required" })
-      .nonempty("answer is required"),
+    name: z
+      .string({ required_error: "name is required" })
+      .nonempty("name is required"),
+    email: z
+      .string({ required_error: "email is required" })
+      .nonempty("type is required"),
+    password: z
+      .string({ required_error: "email is required" })
+      .nonempty("password is required"),
   })["~standard"].validate,
 };
 
-export const challengesCache = new DataSourceCache();
+export const usersCache = new DataSourceCache();

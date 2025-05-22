@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import type {
-  GridFilterItem,
   GridFilterModel,
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
 import type { OmitId } from "@toolpad/core/Crud";
-import { createStamp, getAllStamps } from "@/services/stamps";
-import { Stamp, StampModel } from "@/data/stamps";
+import { UserModel } from "@/data/users";
+import { createUser, getAllUsers } from "@/services/users";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -19,44 +18,43 @@ export async function GET(req: NextRequest) {
   const sortModel: GridSortModel = searchParams.get("sort")
     ? JSON.parse(searchParams.get("sort")!)
     : [];
-  const filterModel: GridFilterItem[] = searchParams.get("filter")
+  const filterModel: GridFilterModel = searchParams.get("filter")
     ? JSON.parse(searchParams.get("filter")!)
     : [];
 
-  const trails = await getAllStamps();
+  const users = await getAllUsers();
 
-  let filteredItems = [...trails];
+  let filteredUsers = [...users];
 
-  if (filterModel?.length > 0) {
-    filterModel.forEach(({ field, value, operator }) => {
+  if (filterModel?.items?.length) {
+    filterModel.items.forEach(({ field, value, operator }) => {
       if (!field || value == null) {
         return;
       }
 
-      filteredItems = filteredItems.filter((item) => {
+      filteredUsers = users.filter((user) => {
         // @ts-ignore
-        const itemValue = item[field];
+        const userValue = user[field];
 
         switch (operator) {
           case "contains":
-            return String(itemValue)
+            return String(userValue)
               .toLowerCase()
               .includes(String(value).toLowerCase());
-          case "is":
           case "equals":
-            return itemValue === value;
+            return userValue === value;
           case "startsWith":
-            return String(itemValue)
+            return String(userValue)
               .toLowerCase()
               .startsWith(String(value).toLowerCase());
           case "endsWith":
-            return String(itemValue)
+            return String(userValue)
               .toLowerCase()
               .endsWith(String(value).toLowerCase());
           case ">":
-            return (itemValue as number) > value;
+            return (userValue as number) > value;
           case "<":
-            return (itemValue as number) < value;
+            return (userValue as number) < value;
           default:
             return true;
         }
@@ -66,16 +64,17 @@ export async function GET(req: NextRequest) {
 
   const start = page * pageSize;
   const end = start + pageSize;
-  const paginatedItems = filteredItems.slice(start, end);
+  const paginatedEmployees = filteredUsers.slice(start, end);
 
   return NextResponse.json({
-    items: paginatedItems,
-    itemCount: filteredItems.length,
+    items: paginatedEmployees,
+    itemCount: filteredUsers.length,
   });
 }
 
 export async function POST(req: NextRequest) {
-  const newItem: Partial<OmitId<StampModel>> = await req.json();
-  await createStamp(newItem as Omit<Stamp, "id">);
-  return NextResponse.json(newItem, { status: 201 });
+  const userPayload: Partial<OmitId<UserModel>> = await req.json();
+  const newUser = await createUser(userPayload);
+  const { password, ...userWithoutPassword } = newUser;
+  return NextResponse.json({ user: userWithoutPassword }, { status: 201 });
 }

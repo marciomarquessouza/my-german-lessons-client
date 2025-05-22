@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import type {
   GridFilterItem,
-  GridFilterModel,
   GridPaginationModel,
   GridSortModel,
 } from "@mui/x-data-grid";
 import type { OmitId } from "@toolpad/core/Crud";
-import { createStamp, getAllStamps } from "@/services/stamps";
-import { Stamp, StampModel } from "@/data/stamps";
+import { createLesson, getAllLessons } from "@/services/lessons";
+import { Lesson, LessonModel } from "@/data/lessons";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -23,7 +22,7 @@ export async function GET(req: NextRequest) {
     ? JSON.parse(searchParams.get("filter")!)
     : [];
 
-  const trails = await getAllStamps();
+  const trails = await getAllLessons();
 
   let filteredItems = [...trails];
 
@@ -75,7 +74,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const newItem: Partial<OmitId<StampModel>> = await req.json();
-  await createStamp(newItem as Omit<Stamp, "id">);
-  return NextResponse.json(newItem, { status: 201 });
+  const newLesson: Partial<OmitId<LessonModel>> = await req.json();
+  const createdTrail = await createLesson(newLesson as Omit<Lesson, "id">);
+  return NextResponse.json(createdTrail, { status: 201 });
 }

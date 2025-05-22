@@ -1,13 +1,16 @@
 "use client";
+import { STAMP_CLASSES, STAMP_TYPES } from "@/constants/stamps";
 import { DataModel, DataSource, DataSourceCache } from "@toolpad/core";
 import { z } from "zod";
 
 export interface Stamp {
   id: string;
-  title: string;
-  description: string;
   type: string;
   class: string;
+  lessonId: string;
+  price: number;
+  quantity: number;
+  penalty: number;
 }
 
 export type StampModel = Stamp & DataModel;
@@ -16,10 +19,54 @@ const API_URL = "/api/stamps";
 
 export const stampsDataSource: DataSource<StampModel> = {
   fields: [
-    { field: "title", headerName: "Title", width: 200 },
-    { field: "description", headerName: "Description", width: 400 },
-    { field: "type", headerName: "Type" },
-    { field: "class", headerName: "Class" },
+    {
+      field: "type",
+      headerName: "Type",
+      type: "singleSelect",
+      align: "center",
+      headerAlign: "center",
+      valueOptions: STAMP_TYPES,
+    },
+    {
+      field: "class",
+      headerName: "Class",
+      type: "singleSelect",
+      align: "center",
+      headerAlign: "center",
+      valueOptions: STAMP_CLASSES,
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      type: "number",
+      align: "center",
+      headerAlign: "center",
+      width: 120,
+    },
+    {
+      field: "quantity",
+      headerName: "Quantity",
+      type: "number",
+      align: "center",
+      headerAlign: "center",
+      width: 120,
+    },
+    {
+      field: "penalty",
+      headerName: "Penalty",
+      type: "number",
+      align: "center",
+      headerAlign: "center",
+      width: 100,
+    },
+    {
+      field: "lessonId",
+      headerName: "Lesson",
+      type: "singleSelect",
+      align: "center",
+      headerAlign: "center",
+      width: 200,
+    },
   ],
   getMany: async ({ paginationModel, filterModel, sortModel }) => {
     const queryParams = new URLSearchParams();
@@ -88,9 +135,6 @@ export const stampsDataSource: DataSource<StampModel> = {
     return resJson;
   },
   validate: z.object({
-    title: z
-      .string({ required_error: "title is required" })
-      .nonempty("title is required"),
     type: z
       .string({ required_error: "type is required" })
       .nonempty("type is required"),

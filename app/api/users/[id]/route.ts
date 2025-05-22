@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { OmitId } from "@toolpad/core/Crud";
-import {
-  getChallengeById,
-  removeChallenge,
-  updateChallenge,
-} from "@/services/challenges";
-import { Challenge, ChallengeModel } from "@/data/challenges";
+import { UserModel } from "@/data/users";
+import { getUserById, remove, update } from "@/services/users";
 
 export async function GET(
   req: NextRequest,
@@ -13,22 +9,26 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const item = await getChallengeById(id);
+  const user = await getUserById(id);
 
-  if (!item) {
-    return NextResponse.json({ error: "Trail not found" }, { status: 404 });
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  return NextResponse.json(item);
+  return NextResponse.json(user);
 }
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const item: Partial<OmitId<ChallengeModel>> = await req.json();
+  const user: Partial<OmitId<UserModel>> = await req.json();
   const { id } = await params;
-  const updatedItem = await updateChallenge(id, item as Omit<Challenge, "id">);
-  return NextResponse.json(updatedItem);
+  const updatedUser = await update(id, user);
+
+  if (!updatedUser) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+  return NextResponse.json(updatedUser);
 }
 
 export async function DELETE(
@@ -37,7 +37,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
-  removeChallenge(id);
+  await remove(id);
 
   return NextResponse.json({ success: true });
 }

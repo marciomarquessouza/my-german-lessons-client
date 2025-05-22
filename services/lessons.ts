@@ -7,67 +7,29 @@ import { prisma } from "@/lib/prisma";
 import { Lesson } from "@/data/lessons";
 import { Challenge } from "@/data/challenges";
 import { fileServices } from "@/lib/fileServices";
-import { getChallengesByLessonId } from "./challenges";
 import { GODOT_LESSONS_PATH } from "@/constants/services";
+import camelCase from "lodash/camelCase";
 
-export const createLesson = async (formData: FormData): Promise<void> => {
-  const trailId: string = formData.get("trailId") as string;
-  const name: string = formData.get("name") as string;
-  const slugName = snakeCase(name.toLowerCase());
-  const description = formData.get("description") as string;
-  const doorTitle = formData.get("doorTitle") as string;
-  const roomPosition = Number(formData.get("roomPosition"));
-  const floorPosition = Number(formData.get("floorPosition"));
-
-  if (!name || !description || !trailId) {
-    throw new Error("Empty Field");
-  }
-
-  const lesson: Omit<Lesson, "id"> = {
-    trailId,
-    name,
-    description,
-    slugName,
-    roomPosition,
-    floorPosition,
-    doorTitle,
+export const createLesson = async (lesson: Omit<Lesson, "id">) => {
+  const newLesson: Omit<Lesson, "id"> = {
+    name: lesson.name,
+    slugName: camelCase(lesson.name),
+    description: lesson.description,
+    doorTitle: lesson.doorTitle,
+    roomPosition: lesson.roomPosition,
+    floorPosition: lesson.floorPosition,
+    trailId: lesson.trailId,
   };
-
-  await prisma.lessons.create({ data: lesson });
+  return await prisma.lesson.create({ data: newLesson });
 };
 
 export const updateLesson = async (
   id: string,
-  formData: FormData
-): Promise<void> => {
-  const trailId: string = formData.get("trailId") as string;
-  const name: string = formData.get("name") as string;
-  const slugName = snakeCase(name.toLowerCase());
-  const description = formData.get("description") as string;
-  const doorTitle = formData.get("doorTitle") as string;
-  const roomPosition = Number(formData.get("roomPosition"));
-  const floorPosition = Number(formData.get("floorPosition"));
-
-  if (isNil(id)) {
-    throw new Error("Empty id");
-  }
-
-  if (!name || !description || !trailId) {
-    throw new Error("Empty Field");
-  }
-
-  const lesson: Omit<Lesson, "id"> = {
-    trailId,
-    name,
-    slugName,
-    description,
-    doorTitle,
-    roomPosition,
-    floorPosition,
-  };
-  await prisma.lessons.update({
+  lessonData: Omit<Lesson, "id">
+) => {
+  return await prisma.lesson.update({
     where: { id },
-    data: lesson,
+    data: lessonData,
   });
 };
 
@@ -75,21 +37,21 @@ export const removeLesson = async (id: string): Promise<void> => {
   if (isNil(id)) {
     throw new Error("Empty Field");
   }
-  await prisma.lessons.delete({ where: { id } });
+  await prisma.lesson.delete({ where: { id } });
 };
 
 export const getAllLessons = async (): Promise<Lesson[]> => {
-  return await prisma.lessons.findMany();
+  return await prisma.lesson.findMany();
 };
 
 export const getLessonById = async (id: string): Promise<Lesson | null> => {
-  return await prisma.lessons.findUnique({ where: { id } });
+  return await prisma.lesson.findUnique({ where: { id } });
 };
 
 export const getLessonsByTrailId = async (
   trailId: string
 ): Promise<Lesson[]> => {
-  return await prisma.lessons.findMany({ where: { trailId } });
+  return await prisma.lesson.findMany({ where: { trailId } });
 };
 
 export const exportJSONLessonDocument = async (

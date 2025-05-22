@@ -1,73 +1,77 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model trails {
-  id              String   @id @default(cuid())
-  name            String
-  slugName        String
-  title           String
-  rooms           Int      @default(0)
-  floors          Int      @default(0)
+model Trail {
+  id       String   @id @default(cuid())
+  name     String
+  slugName String
+  title    String
+  rooms    Int      @default(0)
+  floors   Int      @default(0)
+  lessons  Lesson[]
 }
 
-model lessons {
-  id              String   @id @default(cuid())
-  trailId         String
-  name            String
-  slugName        String
-  description     String
-  doorTitle       String   @default("")
-  roomPosition    Int      @default(0)
-  floorPosition   Int      @default(0)
+model Lesson {
+  id            String      @id @default(cuid())
+  trailId       String
+  name          String
+  slugName      String
+  description   String
+  doorTitle     String      @default("")
+  roomPosition  Int         @default(0)
+  floorPosition Int         @default(0)
+  challenges    Challenge[]
+  trail         Trail       @relation(fields: [trailId], references: [id])
+  stamps        Stamp[]
 }
 
-model challenges {
-  id              String   @id @default(cuid())
-  lessonId        String
-  sourceLanguage  String
-  targetLanguage  String
-  question        String
-  answer          String
-  tip             String
+model Stamp {
+  id          String @id @default(cuid())
+  type        String
+  class       String
+  lessonId    String
+  lesson      Lesson @relation(fields: [lessonId], references: [id])
+  price       Float
+  quantity    Int
+  penalty     Int
 }
 
-model stamps {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  type            String
-  class           String
+model Challenge {
+  id             String @id @default(cuid())
+  lessonId       String
+  sourceLanguage String
+  targetLanguage String
+  question       String
+  answer         String
+  tip            String
+  lesson         Lesson @relation(fields: [lessonId], references: [id])
 }
 
-model opponent {
-  id              String   @id @default(cuid())
-  name            String
+model Opponent {
+  id   String @id @default(cuid())
+  name String
 }
 
-model lessonStamps {
-  id              String   @id @default(cuid())
-  lessonId        String
-  stampId         String
-  price           Int      @default(0)
-  penalty         Int      @default(0)
-  quantity        Int      @default(0)
-}
-
-model rounds {
-  id              String   @id @default(cuid())
+model Round {
+  id              String @id @default(cuid())
   lessonId        String
   opponentId      String
   turns           Int
-  challengesLimit Int      @default(0)
-  extraQuestion   Int      @default(0)
-  assistants      Int      @default(0)
+  challengesLimit Int    @default(0)
+  extraQuestion   Int    @default(0)
+  assistants      Int    @default(0)
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
 }

@@ -2,79 +2,42 @@
 import isNil from "lodash/isNil";
 import { prisma } from "@/lib/prisma";
 import { Challenge } from "../data/challenges";
-import { httpClient } from "@/lib/httpClient";
-import { Lesson } from "@/data/lessons";
 
-function parseChallengeForm(
-  lessonId: string,
-  formData: FormData
-): Omit<Challenge, "id"> {
-  return {
-    lessonId,
-    question: formData.get("question") as string,
-    answer: formData.get("answer") as string,
-    targetLanguage: formData.get("targetLanguage") as string,
-    sourceLanguage: formData.get("sourceLanguage") as string,
-    tip: formData.get("tip") as string,
+export const createChallenge = async (challenge: Omit<Challenge, "id">) => {
+  const newChallenge: Omit<Challenge, "id"> = {
+    lessonId: challenge.lessonId,
+    sourceLanguage: challenge.sourceLanguage,
+    targetLanguage: challenge.targetLanguage,
+    question: challenge.question,
+    answer: challenge.answer,
+    tip: challenge.tip || "",
   };
-}
-
-export const createChallenge = async (
-  lessonId: string,
-  formData: FormData
-): Promise<void> => {
-  const challenge = parseChallengeForm(lessonId, formData);
-  await httpClient.POST<Omit<Challenge, "id">>("/challenges", challenge);
+  return await prisma.challenge.create({ data: newChallenge });
 };
 
 export const updateChallenge = async (
   id: string,
-  lessonId: string,
-  formData: FormData
-): Promise<void> => {
-  const challenge = parseChallengeForm(lessonId, formData);
-
-  if (isNil(id)) {
-    throw new Error("Empty id");
-  }
-
-  if (!challenge.question || !challenge.answer || !challenge.lessonId) {
-    throw new Error("Empty Field");
-  }
-
-  await httpClient.PUT<Omit<Challenge, "id">>(`/challenges/${id}`, challenge);
+  challengeData: Omit<Challenge, "id">
+) => {
+  return await prisma.challenge.update({
+    where: { id },
+    data: challengeData,
+  });
 };
 
 export const removeChallenge = async (id: string): Promise<void> => {
   if (isNil(id)) {
     throw new Error("Empty Field");
   }
-
-  await httpClient.DELETE<Omit<Challenge, "id">>(`/challenges/${id}`);
+  await prisma.challenge.delete({ where: { id } });
 };
 
-export const getChallengesByLessonId = async (
-  lessonId: string
-): Promise<Challenge[]> => {
-  return await prisma.challenges.findMany({ where: { lessonId } });
+export const getAllChallenges = async (): Promise<Challenge[]> => {
+  return await prisma.challenge.findMany();
 };
 
 export const getChallengeById = async (
   id: string
 ): Promise<Challenge | null> => {
-  return await prisma.challenges.findUnique({ where: { id } });
-};
-
-export const createJsonFile = async (
-  lesson?: Lesson | null,
-  challenges?: Challenge[]
-) => {
-  if (isNil(lesson) || isNil(challenges)) {
-    throw new Error(" Missing Lesson and Challenges");
-  }
-
-  return await httpClient.POST("/lessons/files", {
-    lesson,
-    challenges,
-  });
+  return await prisma.challenge.findUnique({ where: { id } });
 };

@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { OmitId } from "@toolpad/core/Crud";
-import {
-  getChallengeById,
-  removeChallenge,
-  updateChallenge,
-} from "@/services/challenges";
-import { Challenge, ChallengeModel } from "@/data/challenges";
+import { getLessonById, removeLesson, updateLesson } from "@/services/lessons";
+import { Lesson, LessonModel } from "@/data/lessons";
 
 export async function GET(
   req: NextRequest,
@@ -13,7 +9,7 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const item = await getChallengeById(id);
+  const item = await getLessonById(id);
 
   if (!item) {
     return NextResponse.json({ error: "Trail not found" }, { status: 404 });
@@ -25,9 +21,9 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const item: Partial<OmitId<ChallengeModel>> = await req.json();
+  const lesson: Partial<OmitId<LessonModel>> = await req.json();
   const { id } = await params;
-  const updatedItem = await updateChallenge(id, item as Omit<Challenge, "id">);
+  const updatedItem = await updateLesson(id, lesson as Omit<Lesson, "id">);
   return NextResponse.json(updatedItem);
 }
 
@@ -37,7 +33,7 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
-  removeChallenge(id);
+  removeLesson(id);
 
   return NextResponse.json({ success: true });
 }

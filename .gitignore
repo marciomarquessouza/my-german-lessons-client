@@ -3,3 +3,5 @@ node_modules/
 .swc/
 .*.env
 .env
+.vercel
+generated/prisma/
