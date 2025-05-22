@@ -16,10 +16,10 @@ export default function Layout(props: { children: React.ReactNode }) {
       return `New ${name}`;
     }
     if (id && pathname.includes("/edit")) {
-      return `${name} ${id} - Edit`;
+      return `${name} - Edit`;
     }
     if (id) {
-      return `${name} ${id}`;
+      return `${name}`;
     }
     return undefined;
   }, [id, pathname, name]);
